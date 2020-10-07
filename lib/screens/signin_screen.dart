@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:photomemo/controller/firebasecontroller.dart';
+import 'package:photomemo/screens/views/mydialog.dart';
 
 class SignInScreen extends StatefulWidget{
   static const routeName = '/signInScreen';
@@ -69,12 +71,23 @@ class _Controller{
   String email;
   String password;
 
-  void signIn(){
+  void signIn() async{
     if(!_state.formKey.currentState.validate()){
       return;
     }
     _state.formKey.currentState.save();
     print('========= Email: $email  Password: $password');
+
+    try{
+      var user = await FirebaseController.signIn(email, password);
+      print('==== USER: $user');
+    } catch(e){
+      MyDialog.info(
+        context: _state.context,
+        title: 'Sign in error',
+        content: e.message ?? e.toString(),
+      );
+    }
   }
 
   String validatorEmail(String value){
