@@ -1,3 +1,5 @@
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+
 class PhotoMemo{
   //Field names for firebase
   static const COLLECTION = 'photoMemos';
@@ -8,6 +10,8 @@ class PhotoMemo{
   static const PHOTO_URL = 'photoURL';
   static const PHOTO_PATH = 'photoPath';
   static const UPDATED_AT = 'updatedAt';
+  static const SHARED_WITH = 'sharedWith';
+  static const IMAGE_LABELS = 'imageLabels';
 
 
   String docId; // auto generated firebase doc id
@@ -17,6 +21,8 @@ class PhotoMemo{
   String photoPath; // firebase storage's name
   String photoURL; // firebase storage URL for internet access
   DateTime updatedAt; //created/revised time
+  List<dynamic> sharedWith;
+  List<dynamic> imageLabels; // gernated by machine learning
 
   PhotoMemo({
     this.docId,
@@ -26,7 +32,13 @@ class PhotoMemo{
     this.photoPath,
     this.photoURL,
     this.updatedAt,
-  });
+    this.sharedWith,
+    this.imageLabels,
+  }){
+    this.sharedWith ??= [];
+    this.imageLabels ??= [];
+  
+  }
 
 //Converting dart object to firestore document
   Map<String, dynamic> serialize(){
@@ -37,6 +49,8 @@ class PhotoMemo{
       PHOTO_PATH: photoPath,
       PHOTO_URL: photoURL,
       UPDATED_AT: updatedAt,
+      SHARED_WITH: sharedWith,
+      IMAGE_LABELS: imageLabels,
     };
   }
 
@@ -49,6 +63,8 @@ class PhotoMemo{
       memo: data[PhotoMemo.MEMO],
       photoPath: data[PhotoMemo.PHOTO_PATH],
       photoURL: data[PhotoMemo.PHOTO_URL],
+      sharedWith: data[PhotoMemo.SHARED_WITH],
+      imageLabels: data[PhotoMemo.IMAGE_LABELS],
       updatedAt: data[PhotoMemo.UPDATED_AT] != null ?
         DateTime.fromMicrosecondsSinceEpoch(data[PhotoMemo.UPDATED_AT].millisecondsSinceEpoch) : null,
     );
