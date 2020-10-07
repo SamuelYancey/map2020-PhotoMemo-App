@@ -12,6 +12,7 @@ class PhotoMemo{
   static const UPDATED_AT = 'updatedAt';
   static const SHARED_WITH = 'sharedWith';
   static const IMAGE_LABELS = 'imageLabels';
+  static const MIN_CONFIDENCE = 0.6;
 
 
   String docId; // auto generated firebase doc id
