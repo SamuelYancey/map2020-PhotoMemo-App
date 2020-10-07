@@ -66,24 +66,34 @@ class _SignInState extends State<SignInScreen>{
 class _Controller{
   _SignInState _state;
   _Controller(this._state);
+  String email;
+  String password;
 
   void signIn(){
-
+    if(!_state.formKey.currentState.validate()){
+      return;
+    }
+    _state.formKey.currentState.save();
+    print('========= Email: $email  Password: $password');
   }
 
   String validatorEmail(String value){
-
+    if(value == null || !value.contains('@') || !value.contains('.')){
+      return 'Invalid Email Address';
+    }else return null;
   }
 
   void onSavedEmail(String value){
-
+    email = value;
   }
 
   String validatorPassword(String value){
-
+    if(value == null || value.length < 6){
+      return 'Invalid Password-Minimum 6 chars';
+    }else return null;
   }
 
   void onSavedPassword(String value){
-
+    password = value;
   }
 }
