@@ -119,7 +119,7 @@ class _Controller {
       List<PhotoMemo> photoMemos = await FirebaseController.getPhotoMemos(user.email);
       // go to home screen to display
       MyDialog.circularProgressEnd(_state.context);
-      Navigator.pushNamed(_state.context, HomeScreen.routeName,
+      Navigator.pushReplacementNamed(_state.context, HomeScreen.routeName,
           arguments: {'user': user, 'photoMemoList': photoMemos});
       print(photoMemos.toString());
     }catch(e){

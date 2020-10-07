@@ -11,8 +11,15 @@ class FirebaseController {
     return auth.user;
   }
 
+  static Future<void> signOut() async{
+    await FirebaseAuth.instance.signOut();
+  }
+
   static Future<List<PhotoMemo>> getPhotoMemos(String email) async{
-    QuerySnapshot qss = await Firestore.instance.collection(PhotoMemo.COLLECTION).getDocuments();
+    QuerySnapshot qss = await Firestore.instance
+    .collection(PhotoMemo.COLLECTION)
+    .where(PhotoMemo.CREATED_BY, isEqualTo: email)
+    .getDocuments();
     var result = <PhotoMemo>[];
     if(qss != null && qss.documents.length != 0){
       for(var doc in qss.documents){
