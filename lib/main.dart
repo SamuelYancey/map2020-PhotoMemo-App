@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photomemo/screens/add_screen.dart';
+import 'package:photomemo/screens/detailed_screen.dart';
+import 'package:photomemo/screens/edit_screen.dart';
 import 'package:photomemo/screens/home_screen.dart';
 import 'package:photomemo/screens/signin_screen.dart';
 
@@ -16,6 +18,8 @@ class PhotoMemoApp extends StatelessWidget{
         SignInScreen.routeName: (context) => SignInScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
         AddScreen.routeName: (context) => AddScreen(),
+        DetailedScreen.routeName: (context) => DetailedScreen(),
+        EditScreen.routeName: (context) => EditScreen(),
       }
     );
   }

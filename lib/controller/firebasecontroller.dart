@@ -74,4 +74,29 @@ class FirebaseController {
     cloudLabeler.close();
     return labels;
   }
+
+  static Future<void> deletePhotoMemo(PhotoMemo photoMemo) async{
+    await Firestore.instance.collection(PhotoMemo.COLLECTION).document(photoMemo.docId).delete();
+    await FirebaseStorage.instance.ref().child(photoMemo.photoPath).delete();
+  }
+
+  static Future<List<PhotoMemo>> searchImages({
+    @required String email,
+    @required String imageLabel,
+  }) async{
+    QuerySnapshot querySnapshot = await Firestore.instance.collection(PhotoMemo.COLLECTION)
+    .where(PhotoMemo.CREATED_BY, isEqualTo: email)
+    .where(PhotoMemo.IMAGE_LABELS, arrayContains: imageLabel.toLowerCase())
+    .orderBy(PhotoMemo.UPDATED_AT, descending: true)
+    .getDocuments();
+
+
+    var result = <PhotoMemo>[];
+    if(querySnapshot != null && querySnapshot.documents.length != 0){
+      for(var doc in querySnapshot.documents){
+        result.add(PhotoMemo.deserialize(doc.data, doc.documentID));
+      }
+    }
+    return result;
+  }
 }
