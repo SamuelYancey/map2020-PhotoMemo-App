@@ -4,6 +4,7 @@ import 'package:photomemo/controller/firebasecontroller.dart';
 import 'package:photomemo/model/photomemo.dart';
 import 'package:photomemo/screens/add_screen.dart';
 import 'package:photomemo/screens/detailed_screen.dart';
+import 'package:photomemo/screens/sharedwith_screen.dart';
 import 'package:photomemo/screens/signin_screen.dart';
 import 'package:photomemo/screens/views/mydialog.dart';
 import 'package:photomemo/screens/views/myimageview.dart';
@@ -71,8 +72,14 @@ class _HomeState extends State<HomeScreen> {
           drawer: Drawer(
             child: ListView(children: <Widget>[
               UserAccountsDrawerHeader(
-                  accountName: Text(user.displayName ?? 'N/A'),
-                  accountEmail: Text(user.email)),
+                accountName: Text(user.displayName ?? 'N/A'),
+                accountEmail: Text(user.email),
+              ),
+              ListTile(
+                leading: Icon(Icons.people),
+                title: Text('Shared With Me'),
+                onTap: con.sharedWith,
+              ),
               ListTile(
                 leading: Icon(Icons.exit_to_app),
                 title: Text('Sign Out'),
@@ -129,17 +136,19 @@ class _Controller {
     });
   }
 
-  void onTap(int index) {
+  void onTap(int index) async {
     if (delIndex != null) {
       _state.render(() {
         delIndex = null;
       });
       return;
     }
-    Navigator.pushNamed(_state.context, DetailedScreen.routeName, arguments: {
-      'user': _state.user,
-      'photoMemo': _state.photoMemos[index]
-    });
+    await Navigator.pushNamed(_state.context, DetailedScreen.routeName,
+        arguments: {
+          'user': _state.user,
+          'photoMemo': _state.photoMemos[index]
+        });
+    _state.render(() {});
   }
 
   void addButton() async {
@@ -181,14 +190,27 @@ class _Controller {
     _state.formKey.currentState.save();
     //print('SearchKey: $searchKey');
     var results;
-    if(searchKey == null || searchKey.trim().isEmpty){
+    if (searchKey == null || searchKey.trim().isEmpty) {
       results = await FirebaseController.getPhotoMemos(_state.user.email);
-    }else{
-      results = await FirebaseController.searchImages(email: _state.user.email, imageLabel: searchKey);
+    } else {
+      results = await FirebaseController.searchImages(
+          email: _state.user.email, imageLabel: searchKey);
     }
 
-    _state.render((){
+    _state.render(() {
       _state.photoMemos = results;
     });
+  }
+
+  void sharedWith() async{
+    try{
+      List<PhotoMemo> sharedPhotoMemos =
+      await FirebaseController.getPhotoMemosSharedWithMe(_state.user.email);
+
+      await Navigator.pushNamed(_state.context, SharedWithScreen.routeName,
+      arguments: {'user': _state.user, 'sharedPhotoMemoList': sharedPhotoMemos});
+    }catch(e){
+
+    }
   }
 }

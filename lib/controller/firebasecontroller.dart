@@ -99,4 +99,29 @@ class FirebaseController {
     }
     return result;
   }
+
+
+  static Future<void> updatePhotoMemo(PhotoMemo photoMemo) async{
+    photoMemo.updatedAt = DateTime.now();
+    await Firestore.instance
+    .collection(PhotoMemo.COLLECTION)
+    .document(photoMemo.docId)
+    .setData(photoMemo.serialize());
+  }
+
+  static Future<List<PhotoMemo>> getPhotoMemosSharedWithMe(String email) async{
+    QuerySnapshot querySnapshot = await Firestore.instance
+    .collection(PhotoMemo.COLLECTION)
+    .where(PhotoMemo.SHARED_WITH, arrayContains: email)
+    .orderBy(PhotoMemo.UPDATED_AT, descending: true)
+    .getDocuments();
+
+    var result = <PhotoMemo>[];
+    if(querySnapshot != null && querySnapshot.documents.length != 0){
+      for(var doc in querySnapshot.documents){
+        result.add(PhotoMemo.deserialize(doc.data, doc.documentID));
+      }
+    }
+    return result;
+  }
 }
