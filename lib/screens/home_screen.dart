@@ -4,6 +4,7 @@ import 'package:photomemo/controller/firebasecontroller.dart';
 import 'package:photomemo/model/photomemo.dart';
 import 'package:photomemo/screens/add_screen.dart';
 import 'package:photomemo/screens/detailed_screen.dart';
+import 'package:photomemo/screens/settings_screen.dart';
 import 'package:photomemo/screens/sharedwith_screen.dart';
 import 'package:photomemo/screens/signin_screen.dart';
 import 'package:photomemo/screens/views/mydialog.dart';
@@ -70,22 +71,36 @@ class _HomeState extends State<HomeScreen> {
             ],
           ),
           drawer: Drawer(
-            child: ListView(children: <Widget>[
-              UserAccountsDrawerHeader(
-                accountName: Text(user.displayName ?? 'N/A'),
-                accountEmail: Text(user.email),
-              ),
-              ListTile(
-                leading: Icon(Icons.people),
-                title: Text('Shared With Me'),
-                onTap: con.sharedWith,
-              ),
-              ListTile(
-                leading: Icon(Icons.exit_to_app),
-                title: Text('Sign Out'),
-                onTap: con.signOut,
-              ),
-            ]),
+            child: ListView(
+              children: <Widget>[
+                UserAccountsDrawerHeader(
+                  currentAccountPicture: ClipOval(
+                    
+                    child: MyImageView.network(
+                      imageUrl: user.photoUrl,
+                      context: context,
+                    ),
+                  ),
+                  accountName: Text(user.displayName ?? 'N/A'),
+                  accountEmail: Text(user.email),
+                ),
+                ListTile(
+                  leading: Icon(Icons.people),
+                  title: Text('Shared With Me'),
+                  onTap: con.sharedWith,
+                ),
+                ListTile(
+                  leading: Icon(Icons.exit_to_app),
+                  title: Text('Sign Out'),
+                  onTap: con.signOut,
+                ),
+                ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text('Settings'),
+                  onTap: con.settings,
+                ),
+              ],
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
@@ -129,6 +144,15 @@ class _Controller {
   _Controller(this._state);
   int delIndex;
   String searchKey;
+
+  void settings() async {
+    await Navigator.pushNamed(_state.context, SettingsScreen.routeName,
+        arguments: _state.user);
+
+    await _state.user.reload();
+    _state.user = await FirebaseAuth.instance.currentUser();
+    Navigator.pop(_state.context);
+  }
 
   void onLongPress(int index) {
     _state.render(() {
@@ -202,15 +226,17 @@ class _Controller {
     });
   }
 
-  void sharedWith() async{
-    try{
+  void sharedWith() async {
+    try {
       List<PhotoMemo> sharedPhotoMemos =
-      await FirebaseController.getPhotoMemosSharedWithMe(_state.user.email);
+          await FirebaseController.getPhotoMemosSharedWithMe(_state.user.email);
 
       await Navigator.pushNamed(_state.context, SharedWithScreen.routeName,
-      arguments: {'user': _state.user, 'sharedPhotoMemoList': sharedPhotoMemos});
-    }catch(e){
-
-    }
+          arguments: {
+            'user': _state.user,
+            'sharedPhotoMemoList': sharedPhotoMemos
+          });
+      Navigator.pop(_state.context);
+    } catch (e) {}
   }
 }

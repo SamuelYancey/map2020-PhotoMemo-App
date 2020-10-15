@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:photomemo/controller/firebasecontroller.dart';
 import 'package:photomemo/model/photomemo.dart';
 import 'package:photomemo/screens/home_screen.dart';
+import 'package:photomemo/screens/signup_screen.dart';
 import 'package:photomemo/screens/views/mydialog.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -76,6 +77,16 @@ class _SignInState extends State<SignInScreen> {
               color: Colors.teal,
               onPressed: con.signIn,
             ),
+            SizedBox(
+              height: 30,
+            ),
+            FlatButton(
+              onPressed: con.signUp,
+              child: Text(
+                'Sign Up - Account Creation',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
           ]),
         ),
       ),
@@ -88,6 +99,10 @@ class _Controller {
   _Controller(this._state);
   String email;
   String password;
+
+  void signUp() async{
+    Navigator.pushNamed(_state.context, SignUpScreen.routeName);
+  }
 
   void signIn() async {
     if (!_state.formKey.currentState.validate()) {
@@ -115,20 +130,20 @@ class _Controller {
     //Sign in did not fail
     // 1) Grab their photos from firebase
     // 2) take them to home page and display the photos we just grabbed
-    try{
-      List<PhotoMemo> photoMemos = await FirebaseController.getPhotoMemos(user.email);
+    try {
+      List<PhotoMemo> photoMemos =
+          await FirebaseController.getPhotoMemos(user.email);
       // go to home screen to display
       MyDialog.circularProgressEnd(_state.context);
       Navigator.pushReplacementNamed(_state.context, HomeScreen.routeName,
           arguments: {'user': user, 'photoMemoList': photoMemos});
       print(photoMemos.toString());
-    }catch(e){
+    } catch (e) {
       MyDialog.circularProgressEnd(_state.context);
       MyDialog.info(
-        context: _state.context,
-        title: 'Firebase/Firestore error',
-        content: 'Cant get memo, $e'
-      );
+          context: _state.context,
+          title: 'Firebase/Firestore error',
+          content: 'Cant get memo, $e');
     }
   }
 

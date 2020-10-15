@@ -124,4 +124,36 @@ class FirebaseController {
     }
     return result;
   }
+
+
+  static Future<void> signUp(String email, String password) async{
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+  }
+
+  static Future<void> updateProfile({
+    @required File image, //if its null then we dont have to update
+    @required String displayName,
+    @required FirebaseUser user,
+    @required Function progressListener,
+  }) async{
+    UserUpdateInfo updateInfo = UserUpdateInfo();
+    updateInfo.displayName = displayName;
+    if(image != null){
+      String filePath = '${PhotoMemo.PROFILE_FOLDER}/${user.uid}/${user.uid}';
+      StorageUploadTask uploadTask =
+        FirebaseStorage.instance.ref().child(filePath).putFile(image);
+        uploadTask.events.listen((event) {
+          double perc = ((event.snapshot.bytesTransferred.toDouble())/
+                          event.snapshot.totalByteCount.toDouble())*100;
+        progressListener(perc);
+        });
+
+        var download = await uploadTask.onComplete;
+        String url = await download.ref.getDownloadURL();
+
+        updateInfo.photoUrl = url;
+    }
+
+    await user.updateProfile(updateInfo);
+  }
 }

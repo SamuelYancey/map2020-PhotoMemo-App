@@ -4,6 +4,7 @@ class PhotoMemo{
   //Field names for firebase
   static const COLLECTION = 'photoMemos';
   static const IMAGE_FOLDER = 'photoMemoPictures';
+  static const PROFILE_FOLDER = 'profilePictures';
   static const CREATED_BY = 'createdBy';
   static const TITLE = 'title';
   static const MEMO = 'memo';
