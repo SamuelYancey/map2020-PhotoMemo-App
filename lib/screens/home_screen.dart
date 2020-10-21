@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:photomemo/controller/firebasecontroller.dart';
+import 'package:photomemo/model/chatroom.dart';
 import 'package:photomemo/model/photomemo.dart';
 import 'package:photomemo/screens/add_screen.dart';
+import 'package:photomemo/screens/chat_screen.dart';
 import 'package:photomemo/screens/detailed_screen.dart';
 import 'package:photomemo/screens/settings_screen.dart';
 import 'package:photomemo/screens/sharedwith_screen.dart';
@@ -85,6 +87,11 @@ class _HomeState extends State<HomeScreen> {
                   accountEmail: Text(user.email),
                 ),
                 ListTile(
+                  leading: Icon(Icons.chat),
+                  title: Text('Chat with Friends'),
+                  onTap: con.chatWith,
+                ),
+                ListTile(
                   leading: Icon(Icons.people),
                   title: Text('Shared With Me'),
                   onTap: con.sharedWith,
@@ -144,6 +151,21 @@ class _Controller {
   _Controller(this._state);
   int delIndex;
   String searchKey;
+
+
+  void chatWith() async{
+    try {
+      List<ChatRoom> sharedChat =
+          await FirebaseController.getChatRoomSharedWithMe(_state.user.email);
+
+      await Navigator.pushNamed(_state.context, ChatScreen.routeName,
+          arguments: {
+            'user': _state.user,
+            'sharedChat': sharedChat
+          });
+      Navigator.pop(_state.context);
+    } catch (e) {}
+  }
 
   void settings() async {
     await Navigator.pushNamed(_state.context, SettingsScreen.routeName,
